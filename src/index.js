@@ -4,7 +4,10 @@ document.getElementById("board").innerHTML = `
 <h3>Welcome to the Oldie Goldie</h3>
 <h1>Tic Tac Toe Game</h1>
 <h6><em>GAME RULES: </em> First player is <em>Player A</em>. Second Player is <em>Player B</em>. Player A gets the mark <em>"X"</em> and Player B gets the mark <em>"O"</em>.</h6>
-<h4 id="game_state"> To start the Game Click on a box</h4>
+<h4 id="game_state"> To start the Game Click on a box in the game board</h4>
+<div id="progress-bar-container">
+  <div id="progress-bar"></div>
+</div>
 <h5 id="game_result"></h5>
 <div>
   <table>
@@ -50,6 +53,14 @@ document.getElementById("board").innerHTML = `
 var i;
 var bol = false;
 
+/*
+setInterval(autoGameStateChange, 10);
+
+autoGameStateChange(){
+
+}
+*/
+
 for (i = 1; i < 26; i++) {
   document.getElementById(i).addEventListener("click", function () {
     clickHandler.bind(this)();
@@ -83,7 +94,7 @@ function checkSmallArrayForO(arr) {
 }
 
 function checkResult() {
-  var finalResult = "Game in progress";
+  var finalResult = "";
 
   var i;
   var valsArr = [];
@@ -99,9 +110,27 @@ function checkResult() {
   var leftDiaArr = [],
     rightDiaArr = [];
   var diaArrs;
+  var gameProgressCount = 1;
+  var gameProgressPercentage = 0;
+
   for (i = 1; i < 26; i++) {
     valsArr.push(document.getElementById(i).innerHTML);
   }
+
+  for (i = 0; i < 25; i++) {
+    if (valsArr[i] === "X" || valsArr[i] === "O") {
+      gameProgressCount++;
+    }
+  }
+
+  if (gameProgressCount > 25) {
+    gameProgressCount--;
+  }
+
+  gameProgressPercentage = (gameProgressCount / 25) * 100;
+
+  document.getElementById("progress-bar").style.width =
+    gameProgressPercentage.toString() + "%";
 
   rowArrs.push(valsArr.slice(0, 5));
   rowArrs.push(valsArr.slice(5, 10));

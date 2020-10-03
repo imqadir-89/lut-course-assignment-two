@@ -15,3 +15,13 @@ td {
   font-family: Helvetica;
   font-size: 30px;
 }
+#progress-bar-container {
+  height: 16px;
+  width: 100%;
+  border: 1px solid black;
+}
+#progress-bar {
+  height: 16px;
+  background-color: rgb(66, 190, 216);
+  width: 0%;
+}
