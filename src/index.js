@@ -5,6 +5,7 @@ document.getElementById("board").innerHTML = `
 <h1>Tic Tac Toe Game</h1>
 <h6><em>GAME RULES: </em> First player is <em>Player A</em>. Second Player is <em>Player B</em>. Player A gets the mark <em>"X"</em> and Player B gets the mark <em>"O"</em>.</h6>
 <h4 id="game_state"> To start the Game Click on a box in the game board</h4>
+<h4 id="game_timer"> Game Timer: </h4>
 <div id="progress-bar-container">
   <div id="progress-bar"></div>
 </div>
@@ -13,7 +14,7 @@ document.getElementById("board").innerHTML = `
   <table>
     <tr>
       <td id="1"></td>
-      <td id="2"></td> 
+      <td id="2"></td>
       <td id="3"></td>
       <td id="4"></td>
       <td id="5"></td>
@@ -52,12 +53,20 @@ document.getElementById("board").innerHTML = `
 
 var i;
 var bol = false;
+var gameStarted = false;
+var gameEnded = false;
+var gameTimer;
+
+setInterval(function () {}, 5000);
 
 /*
-setInterval(autoGameStateChange, 10);
-
-autoGameStateChange(){
-
+function automaticGameStateChange(b) {
+	var intervalCount = 0;
+	var intervalChange = setInterval(function(){
+		console.log("boolean passed to interval " + b);
+		intervalCount++;
+		if(intervalCount === 1) clearInterval(intervalChange);
+	}, 10000);
 }
 */
 
@@ -165,38 +174,83 @@ function checkResult() {
   diaArrs = [leftDiaArr, rightDiaArr];
 
   for (i = 0; i < 5; i++) {
-    if (checkSmallArrayForX(rowArrs[i])) finalResult = "Player A won the game!";
-    if (checkSmallArrayForO(rowArrs[i])) finalResult = "Player B won the game!";
-    if (checkSmallArrayForX(colArrs[i])) finalResult = "Player A won the game!";
-    if (checkSmallArrayForO(colArrs[i])) finalResult = "Player B won the game!";
+    if (checkSmallArrayForX(rowArrs[i])) {
+      finalResult = "Player A won the game!";
+      gameEnded = true;
+    }
+    if (checkSmallArrayForO(rowArrs[i])) {
+      finalResult = "Player B won the game!";
+      gameEnded = true;
+    }
+    if (checkSmallArrayForX(colArrs[i])) {
+      finalResult = "Player A won the game!";
+      gameEnded = true;
+    }
+    if (checkSmallArrayForO(colArrs[i])) {
+      finalResult = "Player B won the game!";
+      gameEnded = true;
+    }
   }
 
   for (i = 0; i < 2; i++) {
-    if (checkSmallArrayForX(diaArrs[i])) finalResult = "Player A won the game!";
-    if (checkSmallArrayForO(diaArrs[i])) finalResult = "Player B won the game!";
+    if (checkSmallArrayForX(diaArrs[i])) {
+      finalResult = "Player A won the game!";
+      gameEnded = true;
+    }
+    if (checkSmallArrayForO(diaArrs[i])) {
+      finalResult = "Player B won the game!";
+      gameEnded = true;
+    }
   }
 
   document.getElementById("game_result").innerHTML = finalResult;
 }
 
-function clickHandler() {
-  if (!bol) {
-    checkResult();
-    setGameState("B");
-    this.innerHTML = `X`;
-    this.style.backgroundColor = "rgb(124, 252, 0)";
-  } else {
-    checkResult();
-    setGameState("A");
-    this.innerHTML = `O`;
-    this.style.backgroundColor = "rgb(250, 128, 114)";
-  }
+function switchPlayer() {
   if (!bol) {
     bol = true;
     return;
   }
   if (bol) {
     bol = false;
+    return;
+  }
+}
+
+function startTheTimer() {
+  document.getElementById(
+    "game_timer"
+  ).innerHTML = ` Game Timer: Next player has 10 seconds to make a move!`;
+  gameTimer = setInterval(function () {
+    if (gameTimer) {
+      switchPlayer();
+      clearInterval(gameTimer);
+      document.getElementById(
+        "game_timer"
+      ).innerHTML = `Game Timer: Player Switched because of not making a move!`;
+    }
+  }, 10000);
+}
+
+function clickHandler() {
+  if (!bol) {
+    if (gameTimer) clearInterval(gameTimer);
+    gameStarted = true;
+    checkResult();
+    setGameState("B");
+    this.innerHTML = `X`;
+    this.style.backgroundColor = "rgb(124, 252, 0)";
+    switchPlayer();
+    startTheTimer();
+    return;
+  } else {
+    if (gameTimer) clearInterval(gameTimer);
+    checkResult();
+    setGameState("A");
+    this.innerHTML = `O`;
+    this.style.backgroundColor = "rgb(250, 128, 114)";
+    switchPlayer();
+    startTheTimer();
     return;
   }
 }
